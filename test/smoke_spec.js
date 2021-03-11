@@ -1,124 +1,132 @@
-var PageObject = require('../page_objects/page_object_model');
-var TestData = require('../data/data');
+var EC = protractor.ExpectedConditions;
+var TestData = 
+    require('../data/data');
+var page = 
+    require('../page_objects/page'),
+    addToCartWindow = 
+    require('../page_objects/add_to_cart_window'),
+    authentication =
+    require('../page_objects/authentication'),
+    checkoutAddress =
+    require('../page_objects/checkout_address'),
+    checkoutShipping =
+    require('../page_objects/checkout_shipping'),
+    homePage =
+    require('../page_objects/homepage'),
+    myAccount =
+    require('../page_objects/my_account'),
+    orderConfirmation =
+    require('../page_objects/order_confirmation'),
+    orderSummary = 
+    require('../page_objects/order_summary'),
+    paymentPage =
+    require('../page_objects/payment_page'),
+    productPage =
+    require('../page_objects/product_page'),
+    summaryPage =
+    require('../page_objects/summary_page')
+
 
 describe('TS-001: Smoke Tests Suit', function() {
 
 beforeEach( function() {
 
-  pageObject = new PageObject;
-
   browser.waitForAngularEnabled(false);
 
   // (2) Go to automationpractice.com/index.php
-  browser.get(TestData.webpageLinks.webpageLink);
+  homePage.goToWebsite();
 
 });
 
       it('ST:001: Sign in with valid credentials, add item to shopping cart and successfully check out', function() {
-     
-      var EC = protractor.ExpectedConditions;
 
       // expect that we are on the right website
-      expect(browser.getTitle()).toEqual(TestData.terms.title);
+      homePage.checkWebsite();
 
       // (3) Click “Sign in” button
-      pageObject.signIn.click();
+      homePage.signIn.click();
 
       // (4) Enter test data in “ALREADY REGISTERED?” box
-      pageObject.emailFieldSignIn.sendKeys(TestData.accountInfo.accountEmail);
-      pageObject.passwordFieldSignIn.sendKeys(TestData.accountInfo.accountPassword);
-
       // (5) Click green "Sign in" button
-      pageObject.accountSignIn.click();
+      authentication.signInAccount();
 
       // expect that the sign in was successfull
-      expect(pageObject.loginAccountText.getText()).toEqual(TestData.terms.myAccountTitle);
+      myAccount.checkSignInSuccessfull();
 
       // (6) When redirected to "MY ACCOUNT" page click on the "Home" button
-      pageObject.homeButton.click();
+      myAccount.homeButton.click();
 
       // (7) When redirected to homepage type in search test data 
-      pageObject.searchBar.sendKeys(TestData.terms.searchTerm);
+      homePage.searchBar.sendKeys(TestData.terms.searchTerm);
 
       // (8) Click search icon button 
-      pageObject.searchIcon.click();
+      homePage.search();
 
       // expect that we are redirected on the correct page
-      expect(pageObject.searchTerm.getText()).toEqual(TestData.terms.searchTermTitle);
+      homePage.checkTermSearch();
 
       // (9) Click on the the searched product
-      pageObject.productName.click();
+      homePage.productBlouse.click();
 
       // (10) When redirected to product page select test data attributes
-      pageObject.productSize.sendKeys(TestData.terms.size);
-      pageObject.productColor.click();
+      productPage.changeSize();
+      productPage.changeColor();
       browser.sleep(1000);
-      pageObject.displayAllImgs.click();
+      productPage.displayAllImgs.click();
 
       // (11) Click on the larger product image to preview it
-      pageObject.largerImage.click();
+      productPage.largerImage.click();
 
       // (12) Assert that all of the product images are viewable 
-      browser.wait(EC.elementToBeClickable(pageObject.productImageOne), 10000);
-      expect(pageObject.productImageOne.isDisplayed()).toBe(true);
-      browser.wait(EC.elementToBeClickable(pageObject.productImageNextOne), 10000);
-      pageObject.productImageNextOne.click();
-      browser.wait(EC.elementToBeClickable(pageObject.productImageTwo), 10000);
-      expect(pageObject.productImageTwo.isDisplayed()).toBe(true);
-      browser.wait(EC.elementToBeClickable(pageObject.productImageNextTwo), 10000);
-      pageObject.productImageNextTwo.click();
-      browser.wait(EC.elementToBeClickable(pageObject.productImageThree), 10000);
-      expect(pageObject.productImageThree.isDisplayed()).toBe(true);
+      productPage.checkGalleryImgs();
 
       // (13) Click on the “Close”(X) button
-      browser.wait(EC.elementToBeClickable(pageObject.productImageClose), 10000);
-      pageObject.productImageClose.click();
+      productPage.closeGallery();
 
       // (14) Click “Add to cart” button
-      pageObject.addToCart.click();
+      productPage.addToCart.click();
 
       // (15) On the pop-up window click "Proceed to checkout" button
-      browser.wait(EC.elementToBeClickable(pageObject.proceedCheckout), 10000);
-      pageObject.proceedCheckout.click();
+      addToCartWindow.addToCartWindowProceedCheckout();
 
       // (16) On the "SHOPPING-CART SUMMARY" page assert if the item is "In stock"
-      expect(pageObject.inStock.getText()).toEqual(TestData.terms.inStock);
+      summaryPage.productIsInStock();
 
       // (17) Click "Proceed to checkout" button 
-      pageObject.proceedCheckoutSummary.click();
+      summaryPage.proceedCheckoutSummary.click();
 
       // expect that we are redirected on the correct page
-      expect(pageObject.addressPageText.getText()).toEqual(TestData.terms.addressTitle);
+      checkoutAddress.checkAddressCheckoutPage();
 
       // (18) On the "ADDRESSES" page click "Proceed to checkout" button
-      pageObject.proceedCheckoutAddress.click();
+      checkoutAddress.proceedCheckoutAddress.click();
 
       // expect that we are redirected on the correct page
-      expect(pageObject.shippingPageText.getText()).toEqual(TestData.terms.shippingTitle);
+      checkoutShipping.checkShippingCheckoutPage();
 
       // (19) On the "SHIPPING" page click "Terms of service" check box
-      pageObject.termsOfService.click();
+      checkoutShipping.termsOfService.click();
 
       // (20) Click "Proceed to checkout" button
-      pageObject.proceedCheckoutShipping.click();
+      checkoutShipping.proceedCheckoutShipping.click();
 
       // expect that we are redirected on the correct page
-      expect(pageObject.paymentMethodText.getText()).toEqual(TestData.terms.paymentMethodTitle);
+      paymentPage.checkPaymentCheckoutPage();
 
       // (21) On the "PLEASE CHOOSE YOUR PAYMENT METHOD" page click on the "Pay by bank wire" button
-      pageObject.payByBank.click();
+      paymentPage.payByBank.click();
 
       // expect that we are redirected on the correct page
-      expect(pageObject.orderSummaryText.getText()).toEqual(TestData.terms.orderSummaryTitle);
+      orderSummary.checkSummaryCheckoutPage();
 
       // (22) On the "ORDER SUMMARY" click on the "I confirm my order" button
-      pageObject.proceedCheckoutOrderSummary.click();
+      orderSummary.proceedCheckoutOrderSummary.click();
 
       // expect that we are redirected on the correct page
-      expect(pageObject.orderConfirmationText.getText()).toEqual(TestData.terms.orderConfirmationTitle);
+      orderConfirmation.checkConfirmationCheckoutPage();
 
       // (23) Assert that it says "Your order on My Store is complete."
-      expect(pageObject.orderCompleteText.getText()).toEqual(TestData.terms.orderCompleteTitle);
+      orderConfirmation.checkOrderComplete();
      
 
     });
