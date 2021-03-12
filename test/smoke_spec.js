@@ -1,4 +1,4 @@
-var EC = protractor.ExpectedConditions;
+
 var TestData = 
     require('../data/data');
 var page = 
